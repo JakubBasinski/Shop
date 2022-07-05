@@ -1,24 +1,27 @@
-const path = require('path');
+require('dotenv').config();
 
 const express = require('express');
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
 const session = require('express-session');
+
+const mongoose = require('mongoose');
 const MongoDBStore = require('connect-mongodb-session')(session);
+
+const path = require('path');
+const bodyParser = require('body-parser');
+
+const helmet = require('helmet');
 const csrf = require('csurf');
 const flash = require('connect-flash');
 const multer = require('multer');
-const helmet = require('helmet');
 const compression = require('compression');
-
 const errorController = require('./controllers/error');
 const User = require('./models/user');
-
 const app = express();
 
+const MONGO_URI = `mongodb://${process.env.MONGO_DOCKER}`;
+
 const store = new MongoDBStore({
-  // uri: `mongodb+srv://Manior:****@pierwszycluster.ram8q.mongodb.net/shop?authSource=admin&replicaSet=atlas-cx3nkc-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true`,
-  uri: 'mongodb://mongodb:27017/shop',
+  uri: MONGO_URI,
   collection: 'sessions',
 });
 
@@ -111,8 +114,7 @@ app.use((error, req, res, next) => {
 });
 
 mongoose.connect(
-  // `mongodb+srv://Manior:g****@pierwszycluster.ram8q.mongodb.net/shop?authSource=admin&replicaSet=atlas-cx3nkc-shard-0&w=majority&readPreference=primary&appname=MongoDB%20Compass&retryWrites=true&ssl=true`,
-  `mongodb://mongodb:27017/shop`,
+  MONGO_URI,
   {
     useNewUrlParser: true,
     useUnifiedTopology: true,

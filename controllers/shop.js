@@ -1,12 +1,8 @@
-const fs = require('fs');
-
 const path = require('path');
-
-const PDFDocument = require('pdfkit');
-
 const Product = require('../models/product');
 const Order = require('../models/order');
-const user = require('../models/user');
+const PDFDocument = require('pdfkit');
+const fs = require('fs');
 
 const ITEMS_PER_PAGE = 2;
 
@@ -92,11 +88,8 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getCart = (req, res, next) => {
-  // console.log(user.cart);
-  // console.log(req.user.cart.items.productId);
   req.user
     .populate('cart.items.productId')
-    // .execPopulate()
     .then((user) => {
       console.log(user);
       const products = user.cart.items;
@@ -113,21 +106,6 @@ exports.getCart = (req, res, next) => {
       return next(error);
     });
 };
-
-// exports.getCart = async (req, res, next) => {
-//   await req.user
-//     .populate('cart.items.productId')
-//     .then((user) => {
-//       console.log(user.cart.items);
-//       const products = user.cart.items;
-//       res.render('shop/cart', {
-//         path: '/cart',
-//         pageTitle: 'Your Cart',
-//         products: products,
-//       });
-//     })
-//     .catch((err) => console.log(err));
-// };
 
 exports.postCart = (req, res, next) => {
   const prodId = req.body.productId;
@@ -247,22 +225,7 @@ exports.getInvoice = (req, res, next) => {
       });
       pdfDoc.text('---');
       pdfDoc.fontSize(20).text('Total Price: $' + totalPrice);
-
       pdfDoc.end();
-      // fs.readFile(invoicePath, (err, data) => {
-      //   if (err) {
-      //     return next(err);
-      //   }
-      //   res.setHeader('Content-Type', 'application/pdf');
-      //   res.setHeader(
-      //     'Content-Disposition',
-      //     'inline; filename="' + invoiceName + '"'
-      //   );
-      //   res.send(data);
-      // });
-      // const file = fs.createReadStream(invoicePath);
-
-      // file.pipe(res);
     })
     .catch((err) => next(err));
 };
